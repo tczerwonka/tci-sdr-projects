@@ -23,6 +23,56 @@ const long send_interval = 75;  //ms - means max 20 times per second
 unsigned long lastSendMillis = 0;
 long frequency = 0;
 
+//Buttons configuration
+using namespace ace_button;
+AceButton btn_mute(BTN_MUTE);
+void handleMuteEvent(AceButton*, uint8_t, uint8_t);
+AceButton btn_apf(BTN_APF);
+void handleApfEvent(AceButton*, uint8_t, uint8_t);
+
+//MUTE is a rig related event
+void handleMuteEvent(AceButton* /* button */, 
+                     uint8_t eventType,
+                     uint8_t /* buttonState */) {
+  switch (eventType) {
+    case AceButton::kEventPressed:      
+      if (tci.is_mute()) {
+        tci.set_mute(false);
+      } else {
+        tci.set_mute(true);
+      }
+      break;
+  }
+}
+
+
+//APF is an RX related event
+void handleApfEvent(AceButton* /* button */, 
+                     uint8_t eventType,
+                     uint8_t /* buttonState */) {  
+  switch (eventType) {
+    case AceButton::kEventPressed:  
+      if (tci.rtx[0].isRxApfEnable()) {
+        tci.set_rx_apf_enable(0,false);
+      } else {
+        tci.set_rx_apf_enable(0,true);
+      }
+      break;
+  }
+}
+
+
+void buttonHandler(AceButton* button, uint8_t eventType, uint8_t buttonState) {
+  switch (button->getPin()) {
+    case BTN_MUTE:
+      handleMuteEvent(button, eventType, buttonState);
+      break;
+    case BTN_APF:
+      handleApfEvent(button, eventType, buttonState);
+      break;
+  }
+}
+
 
 
 void displayVfo() {
@@ -71,6 +121,12 @@ void setup() {
   digitalWrite(TCI_CONNECTED_PIN, LOW);
 
 
+  //Button config
+  pinMode(BTN_MUTE,INPUT_PULLUP);
+  pinMode(BTN_APF,INPUT_PULLUP);
+  ButtonConfig* config = ButtonConfig::getSystemButtonConfig();
+  config->setEventHandler(buttonHandler);
+
 
 
   //Rotary encoder setup
@@ -112,6 +168,10 @@ void loop() {
   //You don't need do display the vfo periodically
   //Just recall the displayVfo() function from the
   //event handler in the "tci_events.h" file
+
+  btn_mute.check();
+  btn_apf.check();
+
 
 
   unsigned long currentMillis = millis();

@@ -54,12 +54,26 @@ void on_agc_mode_event(int rtxId) {
 }
 
 
+// ===== MUTE =====
+void on_mute_event() {
+    Serial.printf("== TCI: mute event - value:%d\n", tci.is_mute());
+}
+
+// ===== RX_APF_ENABLE =====
+void on_rx_apf_enable_event(int rtxId) {
+    Serial.printf("== TCI: rx_apf_enable event - rtxId:%d - value:%s\n", 
+                  rtxId, 
+                  tci.rtx[rtxId].isRxApfEnable() ? "true" : "false");
+}
 
 
 
 void configure_tci_events() {
   tci.attach_conn_disc_event(on_connect_disconnect_event);
-  tci.attach_vfo_event(on_vfo_event);
+  tci.attach_vfo_event(on_vfo_event);  
+  tci.attach_mute_event(on_mute_event);
+  tci.attach_rx_apf_enable_event(on_rx_apf_enable_event);  
+
 }
 
 #endif

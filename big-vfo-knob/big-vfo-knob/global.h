@@ -44,6 +44,11 @@ bool refresh_display;
 #define VFO_ENCODER_A_PIN 19
 #define VFO_ENCODER_B_PIN 18
 
+//Pin definitions
+#define BTN_MUTE 13
+#define BTN_APF 12
+
+
 
 
 #endif
