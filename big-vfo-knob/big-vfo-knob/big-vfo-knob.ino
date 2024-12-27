@@ -106,6 +106,11 @@ void displayVfo() {
   } else {
     display.println("   .   .   ");
   }
+display.setCursor(0, 45);
+char buf[11];
+sprintf(buf, "test TEST");
+display.println(buf);
+
   display.display();
 }
 
